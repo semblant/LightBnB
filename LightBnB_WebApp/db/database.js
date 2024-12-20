@@ -22,7 +22,6 @@ const getUserWithEmail = function (email) {
   return pool
   .query('SELECT * FROM users WHERE email = $1', [email])
   .then((res) => {
-    console.log("USER INFORMATION!!!!", res.rows[0]);
     return res.rows[0];
   })
   .catch((err) => {
@@ -57,7 +56,7 @@ const addUser = function (user) {
   const values = [user.name, user.email, user.password]
   pool.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *;`, values)
   .then((res) => {
-    console.log(res.rows);
+    return res.rows[0];
   })
   .catch((err) => {
     console.log(err.message);

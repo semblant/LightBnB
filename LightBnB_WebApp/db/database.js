@@ -26,6 +26,7 @@ const getUserWithEmail = function (email) {
   })
   .catch((err) => {
     console.log(err.message);
+    throw err.message;
   })
 };
 
@@ -42,6 +43,7 @@ const getUserWithId = function (id) {
   })
   .catch((err) => {
     console.log(err.message);
+    throw err.message;
   })
 };
 
@@ -58,6 +60,7 @@ const addUser = function (user) {
   })
   .catch((err) => {
     console.log(err.message);
+    throw err.message;
   });
 };
 

@@ -179,10 +179,30 @@ const getAllProperties = (options, limit = 10) => {
  * @return {Promise<{}>} A promise to the property.
  */
 const addProperty = function (property) {
-  const propertyId = Object.keys(properties).length + 1;
-  property.id = propertyId;
-  properties[propertyId] = property;
-  return Promise.resolve(property);
+  const keys = Object.keys(property) // get property details
+  const values = Object.values(property); // get the values passed in
+  const placeholders = values.map((_, index) => `$${index + 1}`).join(", "); // generate placeholders
+  const queryString = `
+  INSERT INTO properties (
+    ${keys.join(", ")} -- join keys in SQL format
+  )
+  VALUES (
+    ${placeholders} -- use placeholders for values
+  )
+  RETURNING *;
+  `;
+
+  console.log(queryString, values);
+
+  return pool
+    .query(queryString, values)
+    .then((res) => {
+      return res.rows;
+    })
+    .catch((err) => {
+      console.log(err.message);
+      throw err.message;
+    })
 };
 
 module.exports = {

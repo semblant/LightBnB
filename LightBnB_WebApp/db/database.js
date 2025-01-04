@@ -1,8 +1,4 @@
-//const properties = require("./json/properties.json");
-//const users = require("./json/users.json");
-
-const { query } = require('express');
-const { Pool } = require('pg')
+const { Pool } = require('pg');
 
 const pool = new Pool({
   user: "labber",
@@ -19,16 +15,16 @@ const pool = new Pool({
  * @param {String} email The email of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithEmail = function (email) {
+const getUserWithEmail = function(email) {
   return pool
-  .query('SELECT * FROM users WHERE email = $1', [email])
-  .then((res) => {
-    return res.rows[0];
-  })
-  .catch((err) => {
-    console.log(err.message);
-    throw err.message;
-  })
+    .query('SELECT * FROM users WHERE email = $1', [email])
+    .then((res) => {
+      return res.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+      throw err.message;
+    });
 };
 
 /**
@@ -36,16 +32,16 @@ const getUserWithEmail = function (email) {
  * @param {string} id The id of the user.
  * @return {Promise<{}>} A promise to the user.
  */
-const getUserWithId = function (id) {
+const getUserWithId = function(id) {
   return pool
-  .query('SELECT * FROM users WHERE id = $1', [id])
-  .then((res) => {
-    return res.rows[0];
-  })
-  .catch((err) => {
-    console.log(err.message);
-    throw err.message;
-  })
+    .query('SELECT * FROM users WHERE id = $1', [id])
+    .then((res) => {
+      return res.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+      throw err.message;
+    });
 };
 
 /**
@@ -53,16 +49,16 @@ const getUserWithId = function (id) {
  * @param {{name: string, password: string, email: string}} user
  * @return {Promise<{}>} A promise to the user.
  */
-const addUser = function (user) {
-  const values = [user.name, user.email, user.password]
+const addUser = function(user) {
+  const values = [user.name, user.email, user.password];
   return pool.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *;`, values)
-  .then((res) => {
-    return res.rows[0];
-  })
-  .catch((err) => {
-    console.log(err.message);
-    throw err.message;
-  });
+    .then((res) => {
+      return res.rows[0];
+    })
+    .catch((err) => {
+      console.log(err.message);
+      throw err.message;
+    });
 };
 
 /// Reservations
@@ -72,7 +68,7 @@ const addUser = function (user) {
  * @param {string} guest_id The id of the user.
  * @return {Promise<[{}]>} A promise to the reservations.
  */
-const getAllReservations = function (guest_id, limit = 10) {
+const getAllReservations = function(guest_id, limit = 10) {
   const values = [guest_id, limit];
   return pool
     .query(
@@ -90,15 +86,14 @@ const getAllReservations = function (guest_id, limit = 10) {
       ORDER BY reservations.start_date
       LIMIT $2
       `, values
-  )
-  .then((res) => {
-    console.log(res.rows);
-    return res.rows;
-  })
-  .catch((err) => {
-    console.log(err.message);
-    throw err.message;
-  })
+    )
+    .then((res) => {
+      return res.rows;
+    })
+    .catch((err) => {
+      console.log(err.message);
+      throw err.message;
+    });
 };
 
 /// Properties
@@ -110,7 +105,6 @@ const getAllReservations = function (guest_id, limit = 10) {
  * @return {Promise<[{}]>}  A promise to the properties.
  */
 const getAllProperties = (options, limit = 10) => {
-  console.log(options);
   let queryValues = []; // holds query paramters
   let queryConditions = []; // holds passed in filter values
   let queryString =  `
@@ -118,12 +112,12 @@ const getAllProperties = (options, limit = 10) => {
     properties.*,
     AVG(property_reviews.rating) AS average_rating
   FROM properties
-  JOIN property_reviews ON properties.id = property_id
+  LEFT JOIN property_reviews ON properties.id = property_id
   `;
 
   if (options.owner_id) {
     queryValues.push(`${options.owner_id}`);
-    queryConditions.push(`properties.owner_id = $${queryValues.length}`)
+    queryConditions.push(`properties.owner_id = $${queryValues.length}`);
   }
 
   if (options.city) {
@@ -132,13 +126,13 @@ const getAllProperties = (options, limit = 10) => {
   }
 
   if (options.minimum_price_per_night) {
-    const min = options.minimum_price_per_night*100;
+    const min = options.minimum_price_per_night * 100;
     queryValues.push(min);
     queryConditions.push(`cost_per_night >= $${queryValues.length}`);
   }
 
   if (options.maximum_price_per_night) {
-    const max = options.maximum_price_per_night*100;
+    const max = options.maximum_price_per_night * 100;
     queryValues.push(max);
     queryConditions.push(`cost_per_night <= $${queryValues.length}`);
   }
@@ -160,7 +154,7 @@ const getAllProperties = (options, limit = 10) => {
   LIMIT $${queryValues.length};
   `;
 
-  console.log(queryString, queryValues);
+  console.log(queryString, queryValues); // Debug
 
   return pool
     .query(queryString, queryValues)
@@ -178,8 +172,8 @@ const getAllProperties = (options, limit = 10) => {
  * @param {{}} property An object containing all of the property details.
  * @return {Promise<{}>} A promise to the property.
  */
-const addProperty = function (property) {
-  const keys = Object.keys(property) // get property details
+const addProperty = function(property) {
+  const keys = Object.keys(property); // get property details
   const values = Object.values(property); // get the values passed in
   const placeholders = values.map((_, index) => `$${index + 1}`).join(", "); // generate placeholders
   const queryString = `
@@ -192,7 +186,7 @@ const addProperty = function (property) {
   RETURNING *;
   `;
 
-  console.log(queryString, values);
+  console.log(queryString, values); // Debug
 
   return pool
     .query(queryString, values)
@@ -202,7 +196,7 @@ const addProperty = function (property) {
     .catch((err) => {
       console.log(err.message);
       throw err.message;
-    })
+    });
 };
 
 module.exports = {

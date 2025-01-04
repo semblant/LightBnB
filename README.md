@@ -1,6 +1,8 @@
 # LightBnB Project
 
-LightBnB is a clone of AirBnB. You can login to create listing, view your listings or view your reservations. It has filtering capabilities on the Search page where you can search by City, rating and/or price.
+LightBnB is a multi-page clone of AirBnB that uses a server-side JavaScript to display the information from queries to web pages via SQL queries.
+
+You can login to create listing, view your listings or view your reservations. It has filtering capabilities on the Search page where you can search by City, rating and/or price.
 
 
 ## Getting Started
